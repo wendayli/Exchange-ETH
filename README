@@ -1,0 +1,77 @@
+# 🦄 SimpleDEX - Exchange Descentralizado con Pools de Liquidez
+
+## 📌 Descripción del Proyecto
+
+Este proyecto implementa un **exchange descentralizado simple (DEX)** que permite intercambiar dos tokens ERC-20 utilizando el modelo **AMM de producto constante** \((x + dx)(y - dy) = xy\).
+
+Se despliega en la red **Scroll Sepolia** e incluye contratos para los tokens y el DEX.
+
+---
+
+## 📦 Contratos Incluidos
+
+- `TokenA.sol`: Token ERC-20 simple llamado **TokenA** (símbolo: `TKA`).
+- `TokenB.sol`: Token ERC-20 simple llamado **TokenB** (símbolo: `TKB`).
+- `SimpleDEX.sol`: Contrato principal del DEX, que administra el pool y los intercambios.
+
+---
+
+## 🚀 Funcionalidades
+
+- ✅ Agregar liquidez al pool (solo el owner).
+- ✅ Retirar liquidez (solo el owner).
+- ✅ Intercambiar TokenA por TokenB.
+- ✅ Intercambiar TokenB por TokenA.
+- ✅ Consultar precios de los tokens.
+- ✅ Eventos emitidos para cada acción importante.
+
+---
+
+## 🛠️ Requisitos Técnicos
+
+El contrato `SimpleDEX` incluye obligatoriamente las siguientes funciones públicas:
+
+- `constructor(address _tokenA, address _tokenB)`
+- `addLiquidity(uint256 amountA, uint256 amountB)`
+- `swapAforB(uint256 amountAIn)`
+- `swapBforA(uint256 amountBIn)`
+- `removeLiquidity(uint256 amountA, uint256 amountB)`
+- `getPrice(address _token)`
+
+Y emite los siguientes eventos:
+
+- `LiquidityAdded(...)`
+- `LiquidityRemoved(...)`
+- `Swapped(...)`
+
+---
+
+## 🧪 Guía Paso a Paso para Pruebas en Remix
+
+### 1. Desplegar los tokens
+
+1.1 Abre Remix IDE: https://remix.ethereum.org  
+1.2 Crea y compila los archivos `TokenA.sol` y `TokenB.sol`.  
+1.3 Despliega cada uno con el parámetro `initialSupply`, por ejemplo:
+
+```solidity
+TokenA(1000)
+TokenB(1000)
+
+
+Esto generará 1000 tokens con 18 decimales (1000 * 10¹⁸ unidades).
+
+| Nº | Paso                                    | Acción / Función                                              | Detalles                                             |
+| -- | --------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------- |
+| 1  | Desplegar `TokenA`                      | `TokenA(1000)`                                                | Despliega con 1000 tokens (1000 × 10¹⁸)              |
+| 2  | Desplegar `TokenB`                      | `TokenB(1000)`                                                | Igual que arriba, cambia solo el nombre              |
+| 3  | Copiar direcciones de TokenA y TokenB   | -                                                             | Usa las direcciones generadas para el paso siguiente |
+| 4  | Desplegar `SimpleDEX`                   | `SimpleDEX(0xTokenA, 0xTokenB)`                               | Pega aquí las direcciones de los tokens              |
+| 5  | Aprobar TokenA para SimpleDEX           | `approve(0xDEX, 100000000000000000000)`                       | Desde la cuenta owner: 100 TKA                       |
+| 6  | Aprobar TokenB para SimpleDEX           | `approve(0xDEX, 100000000000000000000)`                       | Desde la cuenta owner: 100 TKB                       |
+| 7  | Añadir liquidez al pool                 | `addLiquidity(100000000000000000000, 100000000000000000000)`  | 100 TKA y 100 TKB                                    |
+| 8  | Cambiar TokenA por TokenB (otra cuenta) | `swapAforB(10000000000000000000)`                             | Intercambia 10 TKA                                   |
+| 9  | Cambiar TokenB por TokenA (otra cuenta) | `swapBforA(5000000000000000000)`                              | Intercambia 5 TKB                                    |
+| 10 | Consultar precio de TokenA              | `getPrice(0xTokenA)`                                          | Retorna el precio en TKB (escalado × 1e18)           |
+| 11 | Consultar precio de TokenB              | `getPrice(0xTokenB)`                                          | Retorna el precio en TKA (escalado × 1e18)           |
+| 12 | Retirar liquidez del pool (solo owner)  | `removeLiquidity(10000000000000000000, 10000000000000000000)` | Retira 10 TKA y 10 TKB del pool                      |
