@@ -46,32 +46,58 @@ Y emite los siguientes eventos:
 
 ---
 
-## 🧪 Guía Paso a Paso para Pruebas en Remix
+## 🚀 Guía Paso a Paso para Testing de SimpleDEX
 
-### 1. Desplegar los tokens
+### 🔗 Contratos Desplegados
 
-1.1 Abre Remix IDE: https://remix.ethereum.org  
-1.2 Crea y compila los archivos `TokenA.sol` y `TokenB.sol`.  
-1.3 Despliega cada uno con el parámetro `initialSupply`, por ejemplo:
+| Contrato   | Dirección en Scroll Sepolia                                  |
+|------------|--------------------------------------------------------------|
+| TokenA     | `0x97eb14f0e0d46d1437234d2e49c42dac41edd1de`                  |
+| TokenB     | `0x44a05c2ea3849d7aa869abb54dda433f2ba3a6a5`                  |
+| SimpleDEX  | `0x0b77e6c7713c900e4e9bd4a6c7239cdd06012c69`                  |
 
-```solidity
-TokenA(1000)
-TokenB(1000)
+---
 
+### 🧪 Tabla de Pruebas - Paso a Paso
 
-Esto generará 1000 tokens con 18 decimales (1000 * 10¹⁸ unidades).
+| Nº  | Acción                                      | Función Solidity / Descripción                                                                                       |
+|-----|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| 1   | **Desplegar TokenA**                        | `TokenA(1000)` – Crea 1000 tokens (con 18 decimales).                                                                 |
+| 2   | **Desplegar TokenB**                        | `TokenB(1000)` – Igual que arriba.                                                                                    |
+| 3   | **Desplegar SimpleDEX**                     | `SimpleDEX(0x97eb14f0e0d46d1437234d2e49c42dac41edd1de, 0x44a05c2ea3849d7aa869abb54dda433f2ba3a6a5)`                   |
+| 4   | **Aprobar TokenA al DEX**                   | `approve(0x0b77e6c7713c900e4e9bd4a6c7239cdd06012c69, 100000000000000000000)` → 100 TKA                                 |
+| 5   | **Aprobar TokenB al DEX**                   | `approve(0x0b77e6c7713c900e4e9bd4a6c7239cdd06012c69, 100000000000000000000)` → 100 TKB                                 |
+| 6   | **Agregar Liquidez (solo owner)**           | `addLiquidity(100000000000000000000, 100000000000000000000)` – Agrega 100 TKA y 100 TKB                               |
+| 7   | **Intercambiar TokenA por TokenB**          | `swapAforB(10000000000000000000)` – Intercambia 10 TKA                                                                |
+| 8   | **Intercambiar TokenB por TokenA**          | `swapBforA(5000000000000000000)` – Intercambia 5 TKB                                                                  |
+| 9   | **Consultar precio de TokenA en TKB**       | `getPrice(0x97eb14f0e0d46d1437234d2e49c42dac41edd1de)` – Precio de TKA en términos de TKB                             |
+| 10  | **Consultar precio de TokenB en TKA**       | `getPrice(0x44a05c2ea3849d7aa869abb54dda433f2ba3a6a5)` – Precio de TKB en términos de TKA                             |
+| 11  | **Retirar Liquidez (solo owner)**           | `removeLiquidity(10000000000000000000, 10000000000000000000)` – Retira 10 TKA y 10 TKB del pool                        |
 
-| Nº | Paso                                    | Acción / Función                                              | Detalles                                             |
-| -- | --------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------- |
-| 1  | Desplegar `TokenA`                      | `TokenA(1000)`                                                | Despliega con 1000 tokens (1000 × 10¹⁸)              |
-| 2  | Desplegar `TokenB`                      | `TokenB(1000)`                                                | Igual que arriba, cambia solo el nombre              |
-| 3  | Copiar direcciones de TokenA y TokenB   | -                                                             | Usa las direcciones generadas para el paso siguiente |
-| 4  | Desplegar `SimpleDEX`                   | `SimpleDEX(0xTokenA, 0xTokenB)`                               | Pega aquí las direcciones de los tokens              |
-| 5  | Aprobar TokenA para SimpleDEX           | `approve(0xDEX, 100000000000000000000)`                       | Desde la cuenta owner: 100 TKA                       |
-| 6  | Aprobar TokenB para SimpleDEX           | `approve(0xDEX, 100000000000000000000)`                       | Desde la cuenta owner: 100 TKB                       |
-| 7  | Añadir liquidez al pool                 | `addLiquidity(100000000000000000000, 100000000000000000000)`  | 100 TKA y 100 TKB                                    |
-| 8  | Cambiar TokenA por TokenB (otra cuenta) | `swapAforB(10000000000000000000)`                             | Intercambia 10 TKA                                   |
-| 9  | Cambiar TokenB por TokenA (otra cuenta) | `swapBforA(5000000000000000000)`                              | Intercambia 5 TKB                                    |
-| 10 | Consultar precio de TokenA              | `getPrice(0xTokenA)`                                          | Retorna el precio en TKB (escalado × 1e18)           |
-| 11 | Consultar precio de TokenB              | `getPrice(0xTokenB)`                                          | Retorna el precio en TKA (escalado × 1e18)           |
-| 12 | Retirar liquidez del pool (solo owner)  | `removeLiquidity(10000000000000000000, 10000000000000000000)` | Retira 10 TKA y 10 TKB del pool                      |
+---
+
+### 📂 Smart Contracts Utilizados
+
+| Archivo Solidity  | Propósito                            |
+|-------------------|--------------------------------------|
+| `TokenA.sol`      | Token ERC-20 simple con 18 decimales |
+| `TokenB.sol`      | Segundo token ERC-20 simple          |
+| `SimpleDEX.sol`   | Contrato de Exchange con AMM x*y=k   |
+
+---
+
+### 🛠️ Herramientas Recomendadas
+
+- **Remix IDE** (https://remix.ethereum.org)
+- **MetaMask** con Scroll Sepolia configurado
+- **Ether desde Scroll Faucet**: [https://scroll.io/faucet](https://scroll.io/faucet)
+
+---
+
+### ✅ Recomendación
+
+Antes de probar, asegúrate de tener:
+- Conectado MetaMask a Scroll Sepolia
+- Fondos de testnet ETH
+- Tokens aprobados desde la cuenta que actúa como `owner`
+
